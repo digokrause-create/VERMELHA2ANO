@@ -6,10 +6,10 @@
     <title>Simulado Provão Paulista 2ª série</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-red-50 text-gray-800 font-sans h-screen overflow-hidden">
+<body class="bg-red-50 text-gray-800 font-sans min-h-screen">
 
     <!-- TELA INICIAL -->
-    <div id="tela-inicial" class="flex flex-col items-center justify-center h-full p-4 overflow-y-auto">
+    <div id="tela-inicial" class="flex flex-col items-center justify-center min-h-screen p-4">
         <div class="bg-white p-8 rounded-lg shadow-md max-w-md w-full text-center my-auto">
             <h1 class="text-2xl font-bold text-red-600 mb-4">Simulado Provão Paulista 2ª série</h1>
             <p class="mb-6 text-sm text-red-600">
@@ -68,7 +68,7 @@
                 <h3 class="font-bold text-lg mb-2 text-blue-700">1.</h3>
                 <img src="2_1_2ANO.jpg" alt="TEXTO1" class="w-4/5 max-w-md h-auto mx-auto my-4 rounded shadow border">
                 <p class="font-bold text-lg mb-2 text-blue-700">Selecione a figura correta:</p>
-               
+                
             <!-- Opção A -->
                 <label class="cursor-pointer relative inline-block">
                 <input type="radio" name="q1" value="a" required class="peer sr-only">
@@ -114,7 +114,7 @@
             <div class="bg-white p-6 rounded shadow">
                 <h3 class="font-bold text-lg mb-2 text-blue-700">2.</h3>
                 <img src="2_2_2ANO.jpg" alt="TEXTO1" class="w-4/5 max-w-md h-auto mx-auto my-4 rounded shadow border">
-               
+                
             <!-- Opção A -->
                 <label class="cursor-pointer relative inline-block">
                 <input type="radio" name="q2" value="a" required class="peer sr-only">
@@ -362,7 +362,7 @@
             <div class="bg-white p-6 rounded shadow">
                 <h3 class="font-bold text-lg mb-2 text-blue-700">18.</h3>
                 <img src="2_18_2ANO.jpg" alt="TEXTO1" class="w-4/5 max-w-md h-auto mx-auto my-4 rounded shadow border">
-               
+                
             <!-- Opção A -->
                 <label class="cursor-pointer relative inline-block">
                 <input type="radio" name="q18" value="a" required class="peer sr-only">
@@ -771,12 +771,12 @@
 
         // --- GABARITO ---
         const gabarito = {
-    q1: 'c', q2: 'd', q3: 'd', q4: 'e', q5: 'c', q6: 'e', q7: 'b', q8: 'c', q9: 'b',
-    q10: 'b', q11: 'd', q12: 'c', q13: 'd', q14: 'b', q15: 'e', q16: 'd', q17: 'a', q18: 'a',
-    q19: 'c', q20: 'b', q21: 'd', q22: 'd', q23: 'e', q24: 'a', q25: 'b', q26: 'e',
-    q27: 'b', q28: 'a', q29: 'c', q30: 'c', q31: 'b', q32: 'a', q33: 'd', q34: 'a',
-    q35: 'd', q36: 'd', q37: 'e', q38: 'c', q39: 'c', q40: 'e', q41: 'd', q42: 'c'
-};
+            q1: 'c', q2: 'd', q3: 'd', q4: 'e', q5: 'c', q6: 'e', q7: 'b', q8: 'c', q9: 'b',
+            q10: 'b', q11: 'd', q12: 'c', q13: 'd', q14: 'b', q15: 'e', q16: 'd', q17: 'a', q18: 'a',
+            q19: 'c', q20: 'b', q21: 'd', q22: 'd', q23: 'e', q24: 'a', q25: 'b', q26: 'e',
+            q27: 'b', q28: 'a', q29: 'c', q30: 'c', q31: 'b', q32: 'a', q33: 'd', q34: 'a',
+            q35: 'd', q36: 'd', q37: 'e', q38: 'c', q39: 'c', q40: 'e', q41: 'd', q42: 'c'
+        };
 
         // --- FUNÇÃO PARA FORÇAR O TOPO DA TELA ---
         function irParaTopo() {
@@ -814,9 +814,7 @@
             document.documentElement.requestFullscreen().then(() => {
                 document.getElementById('tela-inicial').style.display = 'none';
                 
-                // LIBERA A ROLAGEM DA PÁGINA
-                document.body.classList.remove('h-screen', 'overflow-hidden');
-                document.body.classList.add('min-h-screen');
+                // AS CLASSES DE BLOQUEIO FORAM REMOVIDAS DO HTML E DAQUI PARA EVITAR BUGS DE TELA PRESA
 
                 document.getElementById('tela-prova').style.display = 'block';
                 provaIniciada = true;
@@ -865,12 +863,18 @@
                     document.exitFullscreen().catch(e => console.log("Erro ao sair da tela cheia"));
                 }
 
+                const formAtual = new FormData(document.getElementById('form-prova'));
                 const dadosAnulada = new URLSearchParams();
                 dadosAnulada.append('nome', nomeAluno);
                 dadosAnulada.append('turma', turmaAluno);
                 dadosAnulada.append('nota', 'ANULADA'); 
                 dadosAnulada.append('infracoes', infracoesCometidas);
                 dadosAnulada.append('ra', raAluno);
+                
+                // MANDA TODAS AS 42 QUESTÕES ATÉ O MOMENTO DA ANULAÇÃO (OU BRANCO)
+                for (let i = 1; i <= 42; i++) {
+                    dadosAnulada.append('q' + i, formAtual.get('q' + i) || 'branco');
+                }
 
                 fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: dadosAnulada })
                     .catch(err => console.error("Erro na anulação:", err));
@@ -958,6 +962,11 @@
             dadosParaEnviar.append('nota', nota);
             dadosParaEnviar.append('infracoes', infracoesCometidas); // Registra quantas infrações ele teve na entrega final
             dadosParaEnviar.append('ra', raAluno);
+
+            // MANDA TODAS AS 42 QUESTÕES RESPONDIDAS NA ENTREGA NORMAL
+            for (let i = 1; i <= 42; i++) {
+                dadosParaEnviar.append('q' + i, dados.get('q' + i) || 'branco');
+            }
 
             fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: dadosParaEnviar })
                 .then(() => {
