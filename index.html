@@ -871,10 +871,22 @@
                 dadosAnulada.append('infracoes', infracoesCometidas);
                 dadosAnulada.append('ra', raAluno);
                 
-                // MANDA TODAS AS 42 QUESTÕES ATÉ O MOMENTO DA ANULAÇÃO (OU BRANCO)
-                for (let i = 1; i <= 42; i++) {
-                    dadosAnulada.append('q' + i, formAtual.get('q' + i) || 'branco');
-                }
+                // MANDA TODAS AS 42 QUESTÕES ATÉ O MOMENTO DA ANULAÇÃO AVALIANDO CERTO/ERRADO
+for (let i = 1; i <= 42; i++) {
+    let respostaAluno = formAtual.get('q' + i) || 'branco';
+    let respostaCorreta = gabarito['q' + i];
+    let valorFinal = '';
+
+    if (respostaAluno === 'branco') {
+        valorFinal = 'branco';
+    } else if (respostaAluno === respostaCorreta) {
+        valorFinal = respostaAluno + ' (Certo)';
+    } else {
+        valorFinal = respostaAluno + ' (Errado)';
+    }
+
+    dadosAnulada.append('q' + i, valorFinal);
+}
 
                 fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: dadosAnulada })
                     .catch(err => console.error("Erro na anulação:", err));
@@ -963,10 +975,22 @@
             dadosParaEnviar.append('infracoes', infracoesCometidas); // Registra quantas infrações ele teve na entrega final
             dadosParaEnviar.append('ra', raAluno);
 
-            // MANDA TODAS AS 42 QUESTÕES RESPONDIDAS NA ENTREGA NORMAL
-            for (let i = 1; i <= 42; i++) {
-                dadosParaEnviar.append('q' + i, dados.get('q' + i) || 'branco');
-            }
+            // MANDA TODAS AS 42 QUESTÕES RESPONDIDAS NA ENTREGA NORMAL AVALIANDO CERTO/ERRADO
+for (let i = 1; i <= 42; i++) {
+    let respostaAluno = dados.get('q' + i) || 'branco';
+    let respostaCorreta = gabarito['q' + i];
+    let valorFinal = '';
+
+    if (respostaAluno === 'branco') {
+        valorFinal = 'branco';
+    } else if (respostaAluno === respostaCorreta) {
+        valorFinal = respostaAluno + ' (Certo)';
+    } else {
+        valorFinal = respostaAluno + ' (Errado)';
+    }
+
+    dadosParaEnviar.append('q' + i, valorFinal);
+}
 
             fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: dadosParaEnviar })
                 .then(() => {
